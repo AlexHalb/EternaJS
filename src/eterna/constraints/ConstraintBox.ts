@@ -138,9 +138,11 @@ export default class ConstraintBox extends ContainerObject implements Enableable
     public setContent(config: ConstraintBoxConfig): void {
         this._check.visible = config.satisfied && !this._forMissionScreen;
 
+        let constraintHeight = -1;
         this._req.visible = config.fullTexture != null;
         if (this._req.visible) {
             this._req.texture = config.fullTexture;
+            constraintHeight = config.fullTexture.height;
 
             // Add border
             const border = new Graphics();
@@ -192,18 +194,15 @@ export default class ConstraintBox extends ContainerObject implements Enableable
         balloon.styledText = tooltipText;
         this.setMouseOverObject(balloon);
 
-        if (this._forMissionScreen) {
-            this._outline.visible = false;
-            tooltipText.apply(this._sideText);
-            this._sideText.position = new Point(0, this._req.height + 10);
-        }
-
         this._bgGraphics.visible = config.drawBG || false;
         if (this._bgGraphics.visible) {
             this._bgGraphics.clear();
             this._bgGraphics.beginFill(0x1E314B, 0.5);
             this._bgGraphics.drawRoundedRect(0, 0, 111, this._forMissionScreen ? 55 : 75, 15);
             this._bgGraphics.endFill();
+            if (constraintHeight < 0) {
+                constraintHeight = this._bgGraphics.height;
+            }
         }
 
         this._bg.visible = config.thumbnailBG || false;
@@ -217,6 +216,9 @@ export default class ConstraintBox extends ContainerObject implements Enableable
             this._check.position = new Point(55, 55);
             this._noText.position = new Point(35, 1);
             this._stateText.position = new Point(3, 45);
+            if (constraintHeight < 0) {
+                constraintHeight = this._bg.texture.height;
+            }
         }
 
         if (config.stateNumber && !this._forMissionScreen) {
@@ -256,6 +258,12 @@ export default class ConstraintBox extends ContainerObject implements Enableable
         } else if (!config.satisfied && this._satisfied) {
             Flashbang.sound.playSound(Sounds.SoundDecondition);
             this.flare(false);
+        }
+
+        if (this._forMissionScreen) {
+            this._outline.visible = false;
+            tooltipText.apply(this._sideText);
+            this._sideText.position = new Point(0, constraintHeight + 10);
         }
 
         this._satisfied = config.satisfied;

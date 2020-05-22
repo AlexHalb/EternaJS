@@ -13,7 +13,7 @@ export default class MissionIntroConstraints extends ContainerObject {
     private static theme = {
         spacing: 20,
         dotSpacing: 15,
-        maxItemsPerPage: 4
+        maxItemsPerPage: 5
     };
 
     private _props: MissionIntroConstraintsProps;
